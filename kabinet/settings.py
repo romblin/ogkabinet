@@ -204,14 +204,14 @@ CELERY_TASK_ALWAYS_EAGER = strtobool(os.environ.get('CELERY_TASK_ALWAYS_EAGER', 
 BROKER = os.environ.get('CELERY_BROKER')
 
 SWIFT_AUTH_URL = 'https://auth.selcdn.ru'
-SWIFT_USERNAME = '53564'
-SWIFT_KEY = 'ma3IunS6'
-SWIFT_CONTAINER_NAME = 'media_testing'
+SWIFT_USERNAME = os.environ.get('SWIFT_USERNAME')
+SWIFT_KEY = os.environ.get('SWIFT_KEY')
+SWIFT_CONTAINER_NAME = os.environ.get('SWIFT_CONTAINER_NAME')
 
 SWIFT_AUTO_OVERWRITE = True
 SWIFT_AUTH_TOKEN_DURATION = 60 * 60 * 12
-SWIFT_BASE_URL = 'https://media.test-ogd.ru/'
-OVERRIDE_BASE_URL = 'https://media.test-ogd.ru/'
+SWIFT_BASE_URL = os.environ.get('SWIFT_BASE_URL')
+OVERRIDE_BASE_URL = os.environ.get('SWIFT_OVERRIDE_BASE_URL')
 
 JET_DEFAULT_THEME = 'light-blue'
 JET_INDEX_DASHBOARD = 'jet.dashboard.dashboard.DefaultIndexDashboard'

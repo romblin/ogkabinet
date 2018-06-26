@@ -56,12 +56,15 @@ DJANGO_APPS = [
 
 VENDOR_APPS = [
     'django_extensions',
+    'rest_framework',
+    'rest_framework_mongoengine',
 ]
 
 if DEBUG:
     VENDOR_APPS.append('debug_toolbar')
 
 PROJECT_APPS = [
+    'apps.reports',
     'apps.calls',
     'apps.realty',
     'apps.kauth',
@@ -167,7 +170,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # LANGUAGE_CODE = 'en-us'
 LANGUAGE_CODE = 'ru-RU'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -182,6 +185,7 @@ MOSCOW_TIMEZONE = pytz.timezone('Europe/Moscow')
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 MEDIA_URL = '/media/'
 
@@ -197,6 +201,14 @@ CELERY_BEAT_SCHEDULE = {
     'load-calls-from-uiscom': {
         'task': 'load_calls_from_uiscom',
         'schedule': timedelta(hours=5).total_seconds()
+    },
+    'load-ya-metrika-report': {
+        'tasks': 'load_ya_metrika_report',
+        'schedule': timedelta(days=1).total_seconds()
+    },
+    'load-ya-direct-report': {
+        'tasks': 'load_ya_direct_report',
+        'schedule': timedelta(days=1).total_seconds()
     }
 }
 CELERY_TASK_ALWAYS_EAGER = strtobool(os.environ.get('CELERY_TASK_ALWAYS_EAGER', '0'))
@@ -218,3 +230,11 @@ JET_INDEX_DASHBOARD = 'jet.dashboard.dashboard.DefaultIndexDashboard'
 
 JET_MODULE_YANDEX_METRIKA_CLIENT_ID = os.environ.get('YANDEX_METRIKA_CLIENT_ID')
 JET_MODULE_YANDEX_METRIKA_CLIENT_SECRET = os.environ.get('YANDEX_METRIKA_CLIENT_SECRET')
+
+YANDEX_API_TOKEN = os.environ.get('YANDEX_API_TOKEN')
+
+MONGODB_HOST = os.environ.get('MONGODB_HOST')
+MONGODB_DB = os.environ.get('MONGODB_DB')
+
+import mongoengine
+mongoengine.connect(db=MONGODB_DB, host=MONGODB_HOST)

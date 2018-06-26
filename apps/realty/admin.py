@@ -1,25 +1,61 @@
 from django.contrib import admin
-from django.utils.safestring import mark_safe
+from django.forms.fields import CharField
+from django.forms.models import ModelForm
 
 from kabinet.common.admin import site
-from kabinet.common.utils import humanize_bool, build_promosite_url
+from kabinet.common.utils import humanize_bool, promosite_link
+from kabinet.common.forms import LinkWidget
 from .models import *
 
 site.register((RealtyType, RoomsCount, Area, PurchaseCondition,))
 
 
+class YaDirectCampaignTabular(admin.TabularInline):
+    model = YaDirectCampaign
+    extra = 1
+
+
+class ComplexForm(ModelForm):
+    promosite_link = CharField(label='Промосайт', required=False, widget=LinkWidget)
+
+    class Meta:
+        model = Complex
+        exclude = ('subdomain',)
+
+    def __init__(self, *args, **kwargs):
+        super(ComplexForm, self).__init__(*args, **kwargs)
+        self.fields['promosite_link'].initial = self.instance.subdomain
+
+
 @admin.register(Complex, site=site)
 class ComplexAdmin(admin.ModelAdmin):
+    form = ComplexForm
     search_fields = ('name',)
     readonly_fields = ('name', 'subdomain')
-    list_display = ('name', 'promosite_url')
-    list_display_links = None
+    list_display = ('name', lambda c: promosite_link(c.subdomain))
+    inlines = (YaDirectCampaignTabular,)
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'metrika_source_id', 'promosite_link')
+        }),
+        ('Отчет Я.Директ', {
+            'fields': (),
+            'classes': ('collapse', 'direct')
+        }),
+        ('Отчет Я.Метрика', {
+            'fields': (),
+            'classes': ('collapse', 'metrika')
+        })
+    )
 
-    def promosite_url(self, obj):
-        if not obj.subdomain:
-            return None
-        return mark_safe('<a href="{url}" target="_blank">{url}</a>'.format(url=build_promosite_url(obj.subdomain)))
-    promosite_url.short_description = 'Промосайт'
+    class Media:
+        js = (
+            'dist/direct.js',
+            'dist/metrika.js',
+        )
+        css = {
+            'all': ('https://unpkg.com/react-day-picker/lib/style.css',)
+        }
 
 
 @admin.register(Company, site=site)

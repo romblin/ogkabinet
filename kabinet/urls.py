@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from jet.dashboard.dashboard_modules import yandex_metrika_views
 from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
@@ -23,7 +22,8 @@ from kabinet.common.admin import site
 urlpatterns = [
     url(r'^jet/', include('jet.urls', 'jet')),
     url(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
-    url(r'^', site.urls)
+    url(r'^', site.urls),
+    url(r'^api/reports/', include('apps.reports.urls'))
 ]
 
 if settings.DEBUG:

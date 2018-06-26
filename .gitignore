@@ -2,3 +2,7 @@
 .env
 .env.deploy
 .idea
+static/apps/node_modules
+static/dist
+static/apps/webpack-stats.json
+static/apps/package-lock.json

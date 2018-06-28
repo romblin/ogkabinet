@@ -6,12 +6,12 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.admin import AdminSite
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group, Permission
-from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from django.contrib.auth.models import Group, Permission, User
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
 
 from apps.ogrealty.models import OGCompany, OGComplex
 from apps.realty.services import create_or_update_complex, create_or_update_company
+from apps.profiles.admin import UserProfileTabular
 
 if settings.STAGING:
     site_header = 'Тестовый кабинет'
@@ -72,7 +72,13 @@ class KabinetAdminSite(AdminSite):
 
         return HttpResponseRedirect(reverse("admin:realty_company_changelist"))
 
+
+class KUserAdmin(UserAdmin):
+    inlines = [UserProfileTabular]
+
+
 site = KabinetAdminSite()
 
 site.register(Group, GroupAdmin)
 site.register(Permission)
+site.register(User, KUserAdmin)

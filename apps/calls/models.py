@@ -20,6 +20,9 @@ class PhoneCall(models.Model):
     employee_id = OptionalBigIntegerField(verbose_name='ID сотрудника')
     tags = OptionalArrayField(base_field=models.CharField(max_length=255), verbose_name='Тэги')
     campaign_name = MaxOptionalCharField(verbose_name='Рекламная кампания')
+    session_id = OptionalBigIntegerField(verbose_name='ID сессии звонка')
+    records_ids = OptionalArrayField(
+        base_field=models.CharField(max_length=255), verbose_name='ID ссылок на записанный разговор')
 
     # kabinet fields
     created_at = models.DateTimeField(verbose_name='Дата/время создания', auto_now_add=True)
@@ -77,6 +80,8 @@ class PhoneCall(models.Model):
     manager_name = OptionalCharField(verbose_name='Имя менеджера', max_length=255)
     transaction_status = OptionalForeignKey(
         'calls.TransactionStatus', related_name='calls', related_query_name='call', verbose_name='Статус сделки')
+    main_source = OptionalForeignKey('calls.MainSource', verbose_name='Основной источник')
+    additional_source = OptionalForeignKey('calls.AdditionalSource', verbose_name='Доп. источник')
 
     class Meta:
         verbose_name = 'Звонок'
@@ -124,3 +129,15 @@ class Marker(AbstractNamedModel):
     class Meta:
         verbose_name = 'Маркер'
         verbose_name_plural = 'Маркеры'
+
+
+class MainSource(AbstractNamedModel):
+    class Meta:
+        verbose_name = 'Основной источник'
+        verbose_name_plural = 'Основные источники'
+
+
+class AdditionalSource(AbstractNamedModel):
+    class Meta:
+        verbose_name = 'Доп. источник'
+        verbose_name_plural = 'Доп. источники'

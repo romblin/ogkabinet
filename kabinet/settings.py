@@ -37,7 +37,7 @@ DEVELOPMENT = strtobool(os.environ.get('DEVELOPMENT', '0'))
 STAGING = strtobool(os.environ.get('STAGING', '0'))
 PRODUCTION = strtobool(os.environ.get('PRODUCTION', '0'))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -67,7 +67,7 @@ PROJECT_APPS = [
     'apps.reports',
     'apps.calls',
     'apps.realty',
-    'apps.kauth',
+    'apps.profiles',
     'apps.ogrealty',
 ]
 
@@ -95,8 +95,6 @@ PROJECT_MIDDLEWARE = [
 MIDDLEWARE = DJANGO_MIDDLEWARE + VENDOR_MIDDLEWARE + PROJECT_MIDDLEWARE
 
 ROOT_URLCONF = 'kabinet.urls'
-
-AUTH_USER_MODEL = 'kauth.KUser'
 
 TEMPLATES = [
     {
@@ -185,6 +183,7 @@ MOSCOW_TIMEZONE = pytz.timezone('Europe/Moscow')
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 MEDIA_URL = '/media/'

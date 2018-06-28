@@ -1,8 +1,9 @@
 from django.utils.crypto import get_random_string
+from django.contrib.auth import get_user_model
 
 from transliterate import slugify
 
-from apps.kauth.services import create_user
+from apps.profiles.services import create_user_profile
 from .models import Company, Complex
 
 
@@ -12,8 +13,9 @@ def create_or_update_company(cid: int, name: str, is_ad_agency: bool = False, is
 
     if created:
         slugged_name = slugify(name, 'ru')
-        user = create_user(slugged_name, get_random_string(8), first_name=name)
+        user = get_user_model().objects.create_user(slugged_name, None, get_random_string(0))
         user.companies.add(c)
+        create_user_profile(user, name)
 
 
 def create_or_update_complex(cid: int, name: str, subdomain: str = None) -> None:

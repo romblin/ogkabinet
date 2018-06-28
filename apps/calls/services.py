@@ -23,7 +23,7 @@ def load_calls_from_uiscom() -> None:
     datetime_till = datetime.combine(now.date(), time(hour=23, minute=59, second=59, tzinfo=settings.MOSCOW_TIMEZONE))
 
     report_fields = ['start_time', 'finish_time', 'is_lost', 'contact_phone_number', 'virtual_phone_number',
-                     'scenario_name', 'employees', 'campaign_name', 'tags']
+                     'scenario_name', 'employees', 'campaign_name', 'tags', 'call_records', 'id']
     report = get_calls_report(datetime_from, datetime_till, report_fields)
 
     for call_session in report:
@@ -58,7 +58,9 @@ def load_calls_from_uiscom() -> None:
             'employee_name': employee_name,
             'employee_id': employee_id,
             'campaign_name': call_session['campaign_name'],
-            'tags': tags
+            'tags': tags,
+            'session_id': call_session['id'],
+            'records_ids': call_session['call_records']
         }
 
         create_call(**fields)

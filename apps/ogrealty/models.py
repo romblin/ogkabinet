@@ -33,6 +33,10 @@ class OGCompany(ReadOnlyModelMixin, AbstractNamedModel):
     def is_ad_agency(self):
         return self.types.ad_agencies().exists()
 
+    @property
+    def is_builder(self):
+        return self.types.builders().exists()
+
 
 class OGCompanyQuerySet(models.QuerySet):
 
@@ -42,10 +46,14 @@ class OGCompanyQuerySet(models.QuerySet):
     def ad_agencies(self):
         return self.filter(type_id=OGCompanyType.AD_AGENCY_ID)
 
+    def builders(self):
+        return self.filter(type_id=OGCompanyType.BUILDER_ID)
+
 
 class OGCompanyType(ReadOnlyModelMixin, models.Model):
     REALTY_AGENCY_ID = 3
     AD_AGENCY_ID = 7
+    BUILDER_ID = 1
 
     company = models.ForeignKey(
         'ogrealty.OGCompany', verbose_name='ID компании', db_column='company_id',

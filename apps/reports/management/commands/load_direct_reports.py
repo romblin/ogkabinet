@@ -8,7 +8,7 @@ from apps.realty.models import YaDirectCampaign
 
 
 class Command(BaseCommand):
-    help = 'Выгружает отчет из Я.Директа за последнюю неделю'
+    help = 'Выгружает отчет из Я.Директа за последние 15 дней'
 
     def handle(self, *args, **options):
         campaigns = YaDirectCampaign.objects.all()
@@ -18,9 +18,7 @@ class Command(BaseCommand):
 
         today = datetime.today()
 
-        for i in range(7):
-            date_from = today - timedelta(days=i + 1)
-            date_to = today - timedelta(days=i)
-            for item in get_campaign_performance_report(cids, date_from, date_to):
-                create_direct_campaign_report_from_api(item, cids_types[item['CampaignId']])
-
+        date_from = today - timedelta(days=15)
+        date_to = today
+        for item in get_campaign_performance_report(cids, date_from, date_to):
+            create_direct_campaign_report_from_api(item, cids_types[item['CampaignId']])

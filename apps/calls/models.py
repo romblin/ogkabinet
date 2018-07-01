@@ -44,7 +44,7 @@ class PhoneCall(models.Model):
         related_name='redirected_calls', related_query_name='redirected_call'
     )
     company = OptionalForeignKey(
-        'realty.Company', verbose_name='Застройщик', limit_choices_to={'is_ad_agency': False, 'is_agency': False},
+        'realty.Company', verbose_name='Застройщик', limit_choices_to={'is_builder': True},
         on_delete=models.SET_NULL, related_name='calls', related_query_name='call'
     )
     ad_agency = OptionalForeignKey(
@@ -58,7 +58,8 @@ class PhoneCall(models.Model):
         limit_choices_to={'is_agency': True}
     )
     status = OptionalForeignKey('calls.PhoneCallStatus', verbose_name='Статус звонка')
-    is_caller_male = models.NullBooleanField('Звонящий мужчина?')
+    sex = OptionalCharField(
+        verbose_name='Пол звонящего', max_length=10, choices=(('male', 'Мужской'), ('female', 'Женский')))
     realty_type = OptionalForeignKey(
         'realty.RealtyType', verbose_name='Тип недвижимости', related_name='calls',  related_query_name='call')
     rooms_counts = OptionalManyToManyField(

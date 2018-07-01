@@ -6,15 +6,14 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TextField from '@material-ui/core/TextField';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import API from './api';
-import { formatDate } from '../utils';
+import { formatDate, getDateFormat, dateFromString, formatDateToISO } from '../utils';
 
 class DirectApp extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     const dayTimestamp = 24 * 60 * 60 * 1000;
     const yesterday = new Date();
@@ -27,32 +26,55 @@ class DirectApp extends React.Component {
       from: formatDate(yesterday),
       to: formatDate(today)
     };
+
+    this.$ = window.jet.jQuery;
   }
+
+  componentDidMount() {
+    this.createDatePicker('date_from', 'from');
+    this.createDatePicker('date_to', 'to');
+  }
+
+  openPicker = id => {
+    this.$(`#${id}`).datepicker('show');
+  };
+
+  createDatePicker = (id, stateKey) => {
+    this.$(`#${id}`).datepicker({
+      dateFormat: getDateFormat(),
+      nextText: '',
+      prevText: '',
+      onSelect: (date, picker) => this.setState({ [stateKey]: date })
+    });
+  };
 
   loadReport = e => {
     e.preventDefault();
 
-    const { from, to } = this.state;
+    const from = dateFromString(this.state.from);
+    const to = dateFromString(this.state.to);
 
-    Promise.all(this.props.campaignsIds.map(cid => (API.getCampaignsReport(cid, from, to).then(response => {
-      const items = response.data;
+    const reportsFetchers = this.props.campaignsIds.map(cid => (
+      API.getCampaignsReport(cid, formatDateToISO(from), formatDateToISO(to)).then(response => {
+        const items = response.data;
 
-      if (!items.length)
-        return null;
+        if (!items.length)
+          return null;
 
-      const clicks = items.reduce((sum, item) => sum + item['clicks'], 0);
-      const totalCost = items.reduce((sum, item) => sum + item['total_cost'], 0);
-      const clickAvgCost = Math.round(totalCost / clicks);
+        const clicks = items.reduce((sum, item) => sum + item['clicks'], 0);
+        const totalCost = items.reduce((sum, item) => sum + item['total_cost'], 0) / 1000000;
+        const clickAvgCost = Math.round(totalCost / clicks);
 
-      return {
-        ...items[0],
-        clicks: clicks,
-        total_cost: totalCost,
-        clickAvgCost: clickAvgCost
-      };
-    })))).then(campaigns => {
-      this.setState({campaigns: campaigns.filter(Boolean)});
-    });
+        return {
+          ...items[0],
+          clicks: clicks,
+          total_cost: totalCost,
+          clickAvgCost: clickAvgCost
+        };
+      })
+    ));
+
+    Promise.all(reportsFetchers).then(campaigns => this.setState({campaigns: campaigns.filter(Boolean)}));
   };
 
    handleFromChange = e => {
@@ -75,28 +97,32 @@ class DirectApp extends React.Component {
     return (
       <AppBar color="inherit" position="static">
         <Toolbar>
-          <TextField
-            style={{"marginRight": "10px"}}
+          <input
             id="date_from"
-            label="Date From"
-            type="date"
+            type="text"
             defaultValue={from}
-            InputLabelProps={{
-              shrink: true,
-            }}
             onChange={this.handleFromChange}
           />
-          <TextField
-            style={{"marginRight": "10px"}}
+          <a
+            style={{ marginRight: '10px' }}
+            className="vDateField-link"
+            onClick={e => this.openPicker('date_from')}
+          >
+            <span className="icon-calendar"></span>
+          </a>
+          <input
             id="date_to"
-            label="Date To"
-            type="date"
+            type="text"
             defaultValue={to}
-            InputLabelProps={{
-              shrink: true,
-            }}
             onChange={this.handleToChange}
           />
+          <a
+            style={{ marginRight: '10px' }}
+            className="vDateField-link"
+            onClick={e => this.openPicker('date_to')}
+          >
+            <span className="icon-calendar"></span>
+          </a>
           <Button variant='contained' size='small' onClick={this.loadReport}>Применить</Button>
         </Toolbar>
         <Table>

@@ -61,10 +61,13 @@ class ComplexAdmin(admin.ModelAdmin):
 @admin.register(Company, site=site)
 class CompanyAdmin(admin.ModelAdmin):
     search_fields = ('name',)
-    readonly_fields = ('name', 'is_agency', 'is_ad_agency')
-    list_filter = ('is_agency', 'is_ad_agency')
+    list_filter = ('is_agency', 'is_ad_agency', 'is_builder')
     filter_horizontal = ('users',)
-    list_display = ('name', 'is_company_agency', 'is_company_ad_agency')
+    list_display = ('name', 'is_company_agency', 'is_company_ad_agency', 'is_company_builder')
+
+    def is_company_builder(self, obj):
+        return humanize_bool(obj.is_builder)
+    is_company_builder.short_description = 'Застройщик'
 
     def is_company_ad_agency(self, obj):
         return humanize_bool(obj.is_ad_agency)

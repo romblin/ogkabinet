@@ -66,7 +66,7 @@ class KabinetAdminSite(AdminSite):
         og_companies = OGCompany.objects.all().prefetch_related('types')
 
         for oc in og_companies:
-            create_or_update_company(oc.id, oc.name, oc.is_ad_agency, oc.is_agency)
+            create_or_update_company(oc.id, oc.name, oc.is_ad_agency, oc.is_agency, oc.is_builder)
 
         self.message_user(request, 'Компании успешно созданы')
 

@@ -11,12 +11,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import API from './api';
 import _ from 'underscore';
-import { formatDate } from '../utils';
+import { formatDate, getDateFormat, dateFromString, formatDateToISO } from '../utils';
 
 class MetrikaApp extends React.Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     const dayTimestamp = 24 * 60 * 60 * 1000;
     const yesterday = new Date();
@@ -29,7 +29,26 @@ class MetrikaApp extends React.Component {
       to: formatDate(today),
       reports: []
     };
+    this.$ = window.jet.jQuery;
   }
+
+  componentDidMount() {
+    this.createDatePicker('date_from', 'from');
+    this.createDatePicker('date_to', 'to');
+  }
+
+  openPicker = id => {
+    this.$(`#metrika_${id}`).datepicker('show');
+  };
+
+  createDatePicker = (id, stateKey) => {
+    this.$(`#metrika_${id}`).datepicker({
+      dateFormat: getDateFormat(),
+      nextText: '',
+      prevText: '',
+      onSelect: (date, picker) => this.setState({ [stateKey]: date })
+    });
+  };
 
   handleFromChange = e => {
      e.preventDefault();
@@ -44,7 +63,10 @@ class MetrikaApp extends React.Component {
   loadReport = e => {
     e.preventDefault();
 
-    API.getSourcesSummary(this.props.metrikaSourceId, this.state.from, this.state.to).then(response => {
+    const from = dateFromString(this.state.from);
+    const to = dateFromString(this.state.to);
+
+    API.getSourcesSummary(this.props.metrikaSourceId, formatDateToISO(from), formatDateToISO(to)).then(response => {
       let docs = response.data;
 
       const docsWithGroups = _.reject(docs, doc => _.isNull(doc.group_id)).sort((doc1, doc2) => {
@@ -97,28 +119,32 @@ class MetrikaApp extends React.Component {
     return (
       <AppBar color='inherit' position='static'>
         <Toolbar>
-          <TextField
-            style={{"marginRight": "10px"}}
+          <input
             id="metrika_date_from"
-            label="Date From"
-            type="date"
+            type="text"
             defaultValue={from}
-            InputLabelProps={{
-              shrink: true,
-            }}
             onChange={this.handleFromChange}
           />
-          <TextField
-            style={{"marginRight": "10px"}}
+          <a
+            style={{ marginRight: '10px' }}
+            className="vDateField-link"
+            onClick={e => this.openPicker('date_from')}
+          >
+            <span className="icon-calendar"></span>
+          </a>
+          <input
             id="metrika_date_to"
-            label="Date To"
-            type="date"
+            type="text"
             defaultValue={to}
-            InputLabelProps={{
-              shrink: true,
-            }}
             onChange={this.handleToChange}
           />
+          <a
+            style={{ marginRight: '10px' }}
+            className="vDateField-link"
+            onClick={e => this.openPicker('date_to')}
+          >
+            <span className="icon-calendar"></span>
+          </a>
           <Button onClick={this.loadReport} size='small' variant='contained'>Применить</Button>
         </Toolbar>
         <Table>

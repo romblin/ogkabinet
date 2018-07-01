@@ -59,6 +59,7 @@ class PurchaseCondition(AbstractNamedModel):
 class Company(AbstractNamedModel):
     is_ad_agency = models.BooleanField('Рекламное агенство', default=False)
     is_agency = models.BooleanField('Агенство недвижимости', default=False)
+    is_builder = models.BooleanField('Застройщик', default=False)
     users = OptionalManyToManyField(settings.AUTH_USER_MODEL, verbose_name='Пользователи', related_name='companies')
 
     class Meta:

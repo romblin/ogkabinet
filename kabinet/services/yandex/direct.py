@@ -5,7 +5,7 @@ import json
 import requests
 
 TOKEN = 'AQAAAAAciUCXAAUGZ1pvupB73EIIu5xMXuZzMPM'
-DIRECT_API_BASE_URL = 'https://api-sandbox.direct.yandex.com/json/v5/reports'
+DIRECT_API_BASE_URL = 'https://api.direct.yandex.com/json/v5/reports'
 
 
 def get_campaign_performance_report(campaigns_ids, date_from, date_to):

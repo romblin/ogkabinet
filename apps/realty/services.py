@@ -7,8 +7,13 @@ from apps.profiles.services import create_user_profile
 from .models import Company, Complex
 
 
-def create_or_update_company(cid: int, name: str, is_ad_agency: bool = False, is_agency: bool = False) -> None:
-    defaults = {'name': name, 'is_ad_agency': is_ad_agency, 'is_agency': is_agency}
+def create_or_update_company(
+        cid: int,
+        name: str,
+        is_ad_agency: bool = False,
+        is_agency: bool = False,
+        is_builder: bool = False) -> None:
+    defaults = {'name': name, 'is_ad_agency': is_ad_agency, 'is_agency': is_agency, 'is_builder': is_builder}
     c, created = Company.objects.update_or_create(id=cid, defaults=defaults)
 
     if created:
